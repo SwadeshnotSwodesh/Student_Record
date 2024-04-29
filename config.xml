@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+                     http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context.xsd
+                     http://www.springframework.org/schema/tx
+                     http://www.springframework.org/schema/tx/spring-tx.xsd
+                     ">
+           
+            <tx:annotation-driven/>
+           
+           <!-- since the interface cannot be used directly so we are using DriverManagerDataSource instead of DataSource interface -->
+           <!-- this is for the database properties -->
+           <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
+           
+           <!-- the below-mentioned four property is kinda mandatory -->
+           <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+           <property name="url" value="jdbc:mysql://localhost:3306/springjdbc"/>
+           <property name="username" value="root"/>
+           <property name="password" value="012345"/>
+          
+          
+           </bean> 
+           <!-- the database Properties ends here -->
+                    
+         
+         
+         
+         <!-- since we cannot use interface directly.So, we're using LocalSessionFactoryBean class instead of sessionFactory -->
+		<!-- this is for the LocalSessionFactory -->
+          <bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" name="factory">
+           
+           <!-- this is for the data Source -->
+          <property name="dataSource" ref="ds"></property>
+          <!-- this is for the hibernate Properties -->
+          <property name="hibernateProperties">
+          <props>
+          
+          <prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop>
+         <prop key="hibernate.show_sql">true</prop>
+          <prop key="hibernate.hbm2ddl.auto">update</prop>
+          
+          </props>
+          </property>
+          <!-- this is for the annotatedClasses -->
+          <property name="annotatedClasses">
+          <list>
+          <value>com.spring.orm1.entities.Student</value>
+          </list>
+          </property>
+          
+          
+          </bean>
+          <!-- the localSessionFactory ends here -->
+          
+          
+           
+           
+           
+          <!-- this is for the HibernateTemplate --> 
+        <bean class="org.springframework.orm.hibernate5.HibernateTemplate" name="hibernateTemplate">
+          
+          <!-- <constructor-arg name="sessionFactory" ref="factory"/> -->
+           <property name="sessionFactory" ref="factory">
+        	
+        	</property> 
+        
+        </bean>
+                     
+       
+       <!-- this is for the productDao -->
+       <bean class="com.spring.orm1.dao.StudentDao" name="studentDao">
+       <property name="hibernateTemplate" ref="hibernateTemplate"></property>
+       
+       </bean> 
+       
+       
+       
+       <bean name="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+       <property name="sessionFactory" ref="factory"></property>
+       </bean>             
+                     
+                     
+</beans>
